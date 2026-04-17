@@ -1,18 +1,32 @@
 #include "widget.h"
 #include "ui_widget.h"
 
-#include <qdebug.h>
+#include <QDebug>
 #include<fsmpBeeper.h>
+#include<QPixmap>
+#include"monitor.h"
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::Widget)
+    ,time(new QTimer(this))
+    ,monitor_ui(nullptr)
 {
     ui->setupUi(this);
 
     ui->horizontalSlider->setRange(0,100);
 
+
+    QPixmap pix;
+    pix.load(":/zjj.jpg");
+    ui->label_3->setPixmap(pix);
+
+
     connect(&myevent,&fsmpEvents::keyPressed,this,&Widget:: pushbutton);
+
+    connect(time,&QTimer :: timeout,this,&Widget ::timout);
+    time->start(1000);
+
 }
 
 Widget::~Widget()
@@ -110,4 +124,26 @@ void Widget:: pushbutton(int num){
   }
 
 };
+
+void Widget::timout(){
+
+    ui->doubleSpinBox->setValue(myth.temperature());
+    ui->doubleSpinBox_2->setValue(myth.humidity());
+
+};
+
+
+void Widget::on_pushButton_3_clicked()
+{
+    if(!monitor_ui){
+
+        monitor_ui=new Monitor(nullptr);
+
+    }
+
+
+    this->hide();
+
+    monitor_ui->show();
+}
 
